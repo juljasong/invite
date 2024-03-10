@@ -1,8 +1,8 @@
-# 회원 초대 링크 생성 기능 구현
+# Jar 경로
+* https://github.com/juljasong/invite/blob/main/invite-0.0.1-SNAPSHOT.jar
 
-## API 명세
+# API 명세
 **참여자 초대**
-----
 
 * **URL**
 
