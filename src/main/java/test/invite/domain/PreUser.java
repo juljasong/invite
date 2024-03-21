@@ -2,13 +2,13 @@ package test.invite.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
 public class PreUser {
 
     @Id
@@ -27,6 +27,10 @@ public class PreUser {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
     @Builder
     public PreUser(String name, String tel, String email, String randomCode, boolean valid) {
         this.name = name;
@@ -36,4 +40,5 @@ public class PreUser {
         this.valid = valid;
         this.createdAt = LocalDateTime.now();
     }
+
 }

@@ -9,8 +9,10 @@ import test.invite.exception.ExpiredCodeException;
 import test.invite.repository.PreUserRepository;
 import test.invite.repository.UserRepository;
 import test.invite.request.Invite;
+import test.invite.response.InviteResponse;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,7 +24,7 @@ public class UserService {
     private final PreUserRepository preUserRepository;
     private final UserRepository userRepository;
 
-    public String invite(Invite request) {
+    public InviteResponse invite(Invite request) {
         String code = UUID.randomUUID().toString();
         PreUser preUser = PreUser.builder()
                 .name(request.getName())
@@ -34,20 +36,15 @@ public class UserService {
 
         preUserRepository.save(preUser);
 
-        return code;
+        return new InviteResponse(code);
     }
 
     public void checkInvite(String code) {
 
-        Optional<PreUser> optionalPreUser = preUserRepository.findByRandomCode(code);
-        if(optionalPreUser.isEmpty()) {
-            throw new ExpiredCodeException();
-        }
-
-        PreUser preUser = optionalPreUser.get();
-        if(preUser.isValid() == false || LocalDateTime.now().isAfter(preUser.getCreatedAt().plusMinutes(30))) {
-            throw new ExpiredCodeException();
-        }
+        PreUser preUser = preUserRepository.findByRandomCode(code)
+                .filter(PreUser::isValid)
+                .filter(user -> !LocalDateTime.now().isAfter(user.getCreatedAt().plusMinutes(30)))
+                .orElseThrow(ExpiredCodeException::new);
 
         preUser.setValid(false);
 

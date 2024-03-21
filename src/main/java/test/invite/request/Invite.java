@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Getter
-@Setter
-@ToString
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Invite {
 
