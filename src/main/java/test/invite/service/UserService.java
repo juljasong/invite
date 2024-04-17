@@ -3,18 +3,14 @@ package test.invite.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import test.invite.domain.PreUser;
 import test.invite.domain.User;
 import test.invite.exception.ExpiredCodeException;
 import test.invite.repository.PreUserRepository;
 import test.invite.repository.UserRepository;
 import test.invite.request.Invite;
-import test.invite.response.InviteResponse;
 
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,6 +23,17 @@ public class UserService {
 
     public String invite(Invite request) {
         String code = UUID.randomUUID().toString();
+        savePreUser(request, code);
+        return code;
+    }
+
+    public String completeInvite(String code) {
+        PreUser preUser = updateIsValidPreUser(code);
+        saveUser(preUser);
+        return "ok";
+    }
+
+    private void savePreUser(Invite request, String code) {
         PreUser preUser = PreUser.builder()
                 .name(request.getName())
                 .tel(request.getTel())
@@ -34,32 +41,20 @@ public class UserService {
                 .randomCode(code)
                 .valid(true)
                 .build();
-
         preUserRepository.save(preUser);
-
-        return code;
     }
 
-    public void completeInvite(String code) {
-        PreUser preUser = savePreUser(code);
-        saveUser(preUser);
-    }
-
-    private PreUser savePreUser(String code) {
-
+    private PreUser updateIsValidPreUser(String code) {
         PreUser preUser = preUserRepository.findByRandomCode(code)
                 .filter(PreUser::isValid)
                 .filter(user -> !LocalDateTime.now().isAfter(user.getCreatedAt().plusMinutes(30)))
                 .orElseThrow(ExpiredCodeException::new);
-
         preUser.setValid(false);
-        preUserRepository.save(preUser);
 
-        return preUser;
+        return preUserRepository.save(preUser);
     }
 
     private void saveUser(PreUser preUser) {
-
         User user = User.builder()
                 .name(preUser.getName())
                 .tel(preUser.getTel())

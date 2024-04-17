@@ -20,13 +20,11 @@ public class UserController {
 
     @PostMapping("/user/invite")
     public InviteResponse invite(@RequestBody @Valid Invite request) {
-        String code = userService.invite(request);
-        return new InviteResponse(code);
+        return new InviteResponse(userService.invite(request));
     }
 
     @GetMapping("/user/invite/{code}")
     public MessageResponse completeInvite(@PathVariable String code) {
-        userService.completeInvite(code);
-        return MessageResponse.builder().message("ok").build();
+        return new MessageResponse(userService.completeInvite(code));
     }
 }
