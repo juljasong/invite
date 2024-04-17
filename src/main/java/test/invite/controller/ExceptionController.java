@@ -5,14 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 import test.invite.exception.CommonException;
 import test.invite.response.ErrorResponse;
 
-@ControllerAdvice
+@RestControllerAdvice
 @Slf4j
 public class ExceptionController {
 
@@ -47,5 +44,19 @@ public class ExceptionController {
 
         return ResponseEntity.status(statusCode).body(body);
     }
+
+//    @ExceptionHandler(Exception.class)
+//    @ResponseBody
+//    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+//
+//        log.error(e.getMessage());
+//
+//        ErrorResponse body = ErrorResponse.builder()
+//                .code(String.valueOf(500))
+//                .message("INTERNAL_SERVER_ERROR")
+//                .build();
+//
+//        return ResponseEntity.status(500).body(body);
+//    }
 
 }

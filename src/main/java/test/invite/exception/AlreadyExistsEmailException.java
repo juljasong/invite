@@ -9,6 +9,6 @@ public class AlreadyExistsEmailException extends CommonException {
 
     @Override
     public int getStatusCode() {
-        return 400;
+        return ErrorCode.ALREADY_EXISTS_EMAIL_EXCEPTION.getCode();
     }
 }

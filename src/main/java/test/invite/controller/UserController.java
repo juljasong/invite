@@ -4,8 +4,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import test.invite.domain.PreUser;
+import test.invite.domain.User;
 import test.invite.request.Invite;
 import test.invite.response.InviteResponse;
+import test.invite.response.MessageResponse;
 import test.invite.service.UserService;
 
 @RestController
@@ -17,11 +20,13 @@ public class UserController {
 
     @PostMapping("/user/invite")
     public InviteResponse invite(@RequestBody @Valid Invite request) {
-        return userService.invite(request);
+        String code = userService.invite(request);
+        return new InviteResponse(code);
     }
 
     @GetMapping("/user/invite/{code}")
-    public void checkInvite(@PathVariable String code) {
-        userService.checkInvite(code);
+    public MessageResponse completeInvite(@PathVariable String code) {
+        userService.completeInvite(code);
+        return MessageResponse.builder().message("ok").build();
     }
 }

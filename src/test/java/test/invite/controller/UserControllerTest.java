@@ -53,7 +53,7 @@ class UserControllerTest {
 
     @Test
     @DisplayName("참여자 초대를 수락한다.")
-    void checkInvite() throws Exception {
+    void checkInvite1() throws Exception {
 
         Invite invite = Invite.builder()
                 .name("테스트")
@@ -65,7 +65,26 @@ class UserControllerTest {
 
         mockMvc.perform(get("/user/invite/" + code))
                 .andExpect(status().isOk())
-                .andExpect(content().string("OK"))
+                .andExpect(content().string("{\"message\":\"ok\"}"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("참여자 초대 실패 - 중복 가입")
+    void checkInvite2() throws Exception {
+
+        Invite invite = Invite.builder()
+                .name("테스트")
+                .tel("010-2222-3333")
+                .email("test@gmail.com")
+                .build();
+
+        String code = userService.invite(invite);
+        userService.completeInvite(code);
+
+        mockMvc.perform(get("/user/invite/" + code))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string("{\"code\":\"400\",\"message\":\"ì\u009C í\u009A¨í\u0095\u0098ì§\u0080 ì\u0095\u008Aì\u009D\u0080 ì½\u0094ë\u0093\u009C ì\u009E\u0085ë\u008B\u0088ë\u008B¤.\",\"validation\":{}}"))
                 .andDo(print());
     }
 

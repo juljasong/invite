@@ -3,6 +3,7 @@ package test.invite.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import test.invite.domain.PreUser;
 import test.invite.domain.User;
 import test.invite.exception.ExpiredCodeException;
@@ -24,7 +25,7 @@ public class UserService {
     private final PreUserRepository preUserRepository;
     private final UserRepository userRepository;
 
-    public InviteResponse invite(Invite request) {
+    public String invite(Invite request) {
         String code = UUID.randomUUID().toString();
         PreUser preUser = PreUser.builder()
                 .name(request.getName())
@@ -36,10 +37,15 @@ public class UserService {
 
         preUserRepository.save(preUser);
 
-        return new InviteResponse(code);
+        return code;
     }
 
-    public void checkInvite(String code) {
+    public void completeInvite(String code) {
+        PreUser preUser = savePreUser(code);
+        saveUser(preUser);
+    }
+
+    private PreUser savePreUser(String code) {
 
         PreUser preUser = preUserRepository.findByRandomCode(code)
                 .filter(PreUser::isValid)
@@ -47,6 +53,12 @@ public class UserService {
                 .orElseThrow(ExpiredCodeException::new);
 
         preUser.setValid(false);
+        preUserRepository.save(preUser);
+
+        return preUser;
+    }
+
+    private void saveUser(PreUser preUser) {
 
         User user = User.builder()
                 .name(preUser.getName())
@@ -54,8 +66,8 @@ public class UserService {
                 .email(preUser.getEmail())
                 .build();
 
-        preUserRepository.save(preUser);
         userRepository.save(user);
-
     }
+
+
 }

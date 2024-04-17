@@ -9,6 +9,6 @@ public class ExpiredCodeException extends CommonException {
 
     @Override
     public int getStatusCode() {
-        return 400;
+        return ErrorCode.EXPIRED_CODE_EXCEPTION.getCode();
     }
 }
