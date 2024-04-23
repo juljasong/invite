@@ -4,11 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import test.invite.domain.PreUser;
-import test.invite.domain.User;
 import test.invite.request.Invite;
 import test.invite.response.InviteResponse;
 import test.invite.response.MessageResponse;
+import test.invite.response.UserResponse;
 import test.invite.service.UserService;
 
 @RestController
@@ -26,5 +25,10 @@ public class UserController {
     @GetMapping("/user/invite/{code}")
     public MessageResponse completeInvite(@PathVariable String code) {
         return new MessageResponse(userService.completeInvite(code));
+    }
+
+    @GetMapping("/user/get-user/{id}")
+    public UserResponse getUser(@PathVariable Long id) {
+        return new UserResponse(userService.getUser(id));
     }
 }

@@ -2,15 +2,19 @@ package test.invite.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Cache;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import test.invite.domain.PreUser;
 import test.invite.domain.User;
 import test.invite.exception.ExpiredCodeException;
+import test.invite.exception.NotExistsUserException;
 import test.invite.repository.PreUserRepository;
 import test.invite.repository.UserRepository;
 import test.invite.request.Invite;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -65,4 +69,9 @@ public class UserService {
     }
 
 
+    @Cacheable(value = "USER", key = "#id", cacheManager = "redisCacheManager")
+    public User getUser(Long id) {
+        Optional<User> user = userRepository.findById(id);
+        return user.orElseThrow(NotExistsUserException::new);
+    }
 }
